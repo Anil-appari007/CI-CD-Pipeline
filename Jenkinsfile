@@ -1,8 +1,11 @@
 def config = [
             ['dev':['bucket':'devbucket','dist':'1234']],
             ['preprod':['bucket':'prebucket','dist':'5555']],
-            ['prod':['bucket':'prodbucket','dist':'9999']],
+            ['master':['bucket':'prodbucket','dist':'9999']],
         ]
+def BUCKET = null
+def DIST = null
+def id = null
 
 pipeline{
     agent any
@@ -18,11 +21,25 @@ pipeline{
                     checkout scm
                     println "BRANCH_NAME - ${env.BRANCH_NAME}"
 
-                    if (env.BRANCH_NAME == 'master') {
-                        def prodConfig = config.prod
-                        println "Prod bucket = ${prodConfig.bucket}"
-                        println "Prod dist   = ${prodConfig.dist}"
+                    switch(env.BRANCH_NAME){
+                        case 'main':
+                            id = 'master'
+                            break
+                        case 'pre-prod':
+                            id = 'preprod'
+                            break
+                        case 'dev':
+                            id = 'dev'
+                            break
+                        default:
+                            error "invalid branch"
                     }
+                    println "id - ${id}"
+                    def envConfig = config.find { it.containsKey(id) }[id]
+                    println "config of branch - ${envConfig}"
+                    println "bucket - ${envConfig.bucket}"
+                    println "dist - ${envConfig.dist}"
+
                 }
             }
         }
