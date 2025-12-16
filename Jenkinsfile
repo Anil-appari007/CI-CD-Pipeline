@@ -41,8 +41,8 @@ pipeline{
                     println "dist - ${envConfig.dist}"
 
                 }
-                withCredentials([string(credentialsId: 'ANILS_GIT', variable: 'URL')]) {
-                        sh "echo VITE_API_URL=${ANILS_GIT} > .env"
+                withCredentials([string(credentialsId: 'ANILS_GIT', variable: 'ANILS_GIT_URL')]) {
+                        sh "echo VITE_API_URL=${ANILS_GIT_URL} > .env"
                         sh "cat .env"
                     }
             }
